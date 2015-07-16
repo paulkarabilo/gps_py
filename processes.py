@@ -28,3 +28,5 @@ class ProcessList:
         for pid in self.processes:
             yield self.processes[pid]
 
+    def get(self, pid):
+        return self.processes[pid]
