@@ -1,8 +1,13 @@
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk, GLib
 
-import os, signal
+import gobject
+import os
+import signal
+import time
+import threading
 
 from processes import ProcessList
+
 
 class NewProcessDialog(Gtk.Dialog):
     def __init__(self, parent):
@@ -18,9 +23,23 @@ class NewProcessDialog(Gtk.Dialog):
     def get_procname(self):
         return self.entry.get_text()
 
+
+class PSThread(threading.Thread):
+    def __init__(self, callback):
+        self.callback = callback
+        self.stopped = False
+        threading.Thread.__init__(self)
+
+    def run(self):
+        while not self.stopped:
+            self.callback()
+            time.sleep(1)
+
+
 class GnomePSWindow(Gtk.Window):
 
     def __init__(self):
+        self.first_init = False
         Gtk.Window.__init__(self, title="Gnome process explorer")
         self.set_border_width(10)
         self.set_default_size(200, 200)
@@ -32,7 +51,6 @@ class GnomePSWindow(Gtk.Window):
 
         self.processes = ProcessList()
         self.liststore = Gtk.ListStore(str, str)
-        self.populate_proc_list()
 
         self.scrollable = Gtk.ScrolledWindow()
         self.scrollable.set_vexpand(True)
@@ -67,11 +85,37 @@ class GnomePSWindow(Gtk.Window):
 
         self.show_all()
 
+        self.connect('delete-event', Gtk.main_quit)
+
+        gobject.threads_init()
+        GLib.threads_init()
+        Gdk.threads_init()
+        Gdk.threads_enter()
+        self.init_proc_list()
+        Gtk.main()
+        Gdk.threads_leave()
+
+    def init_proc_list(self):
+        print "OLOLOL"
+        thread = threading.Thread(target=self.populate_proc_list)
+        thread.daemon = True
+        thread.start()
+
     def populate_proc_list(self):
+        print "TROLL"
         self.processes.read()
-        self.liststore.clear()
-        for proc in self.processes.list():
-            self.liststore.append([proc.pid, proc.cmdline])
+        if not self.first_init:
+            self.liststore.clear()
+            for proc in self.processes.list():
+                self.liststore.append([proc.pid, proc.cmdline])
+            self.first_init = True
+        else:
+            iter = 0
+            for proc in self.processes.list():
+                self.liststore[iter] = [proc.pid, proc.cmdline]
+                iter += 1
+
+        gobject.timeout_add(2000, self.populate_proc_list)
 
     def on_selection(self, selection):
         model, treeiter = selection.get_selected()
@@ -85,7 +129,6 @@ class GnomePSWindow(Gtk.Window):
         if response == Gtk.ResponseType.OK:
             procname = dialog.get_procname()
             os.system(procname)
-            self.populate_proc_list()
         elif response == Gtk.ResponseType.CANCEL:
             pass
 
@@ -95,7 +138,6 @@ class GnomePSWindow(Gtk.Window):
         if self.selected_pid:
             try:
                 os.kill(int(self.selected_pid), signal.SIGKILL)
-                self.populate_proc_list()
                 self.selected_pid = None
             except OSError:
                 self.show_error("Error", "Could not kill process {0}".format(
@@ -109,6 +151,3 @@ class GnomePSWindow(Gtk.Window):
         dialog.destroy()
 
 win = GnomePSWindow()
-win.connect("delete-event", Gtk.main_quit)
-win.show_all()
-Gtk.main()
