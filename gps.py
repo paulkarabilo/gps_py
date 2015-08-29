@@ -69,18 +69,17 @@ class ProcessView():
         thread.start()
 
     def populate_proc_list(self):
+        t1 = time.time()
         self.processes.read()
-        if not self.first_init:
-            self.liststore.clear()
-            for proc in self.processes.list():
+        i = 0
+        for proc in self.processes.list():
+            if i < len(self.liststore):
+                self.liststore[i] = [proc.pid, proc.cmdline]
+            else:
                 self.liststore.append([proc.pid, proc.cmdline])
-            self.first_init = True
-        else:
-            iter = 0
-            for proc in self.processes.list():
-                self.liststore[iter] = [proc.pid, proc.cmdline]
-                iter += 1
-
+            i += 1
+        t2 = time.time()
+        print "populate proc list takes {}", t2 - t1
         gobject.timeout_add(2000, self.populate_proc_list)
 
 
