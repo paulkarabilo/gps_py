@@ -87,7 +87,6 @@ class ProcessView():
 class GnomePSWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Gnome process explorer")
-        self.set_border_width(10)
         self.set_default_size(200, 200)
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -123,11 +122,10 @@ class GnomePSWindow(Gtk.Window):
 
         self.add(self.box)
 
-        self.show_all()
-
         self.connect('delete-event', Gtk.main_quit)
 
         gobject.threads_init()
+        self.show_all()
         Gtk.main()
 
     def on_new_button_clicked(self, button):
