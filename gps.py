@@ -36,26 +36,13 @@ class PSThread(threading.Thread):
             time.sleep(1)
 
 
-class GnomePSWindow(Gtk.Window):
+class ProcessView():
+    columns = [("PID", str), ("Path", str)]
 
     def __init__(self):
         self.first_init = False
-        Gtk.Window.__init__(self, title="Gnome process explorer")
-        self.set_border_width(10)
-        self.set_default_size(200, 200)
-        self.set_position(Gtk.WindowPosition.CENTER)
-
-        self.grid = Gtk.Grid()
-        self.grid.set_column_homogeneous(True)
-        self.grid.set_row_homogeneous(True)
-
         self.processes = ProcessList()
-        self.liststore = Gtk.ListStore(str, str)
-
-        self.scrollable = Gtk.ScrolledWindow()
-        self.scrollable.set_vexpand(True)
-        self.grid.attach(self.scrollable, 0, 0, 8, 10)
-
+        self.liststore = Gtk.ListStore(int, str)
         self.treeview = Gtk.TreeView(model=self.liststore)
 
         pid_text = Gtk.CellRendererText()
@@ -69,7 +56,52 @@ class GnomePSWindow(Gtk.Window):
         self.treeview.append_column(path_col)
 
         self.treeview.get_selection().connect("changed", self.on_selection)
-        self.scrollable.add(self.treeview)
+        self.init_proc_list()
+
+    def on_selection(self, selection):
+        model, treeiter = selection.get_selected()
+        if treeiter is not None:
+            self.selected_pid = model[treeiter][0]
+
+    def init_proc_list(self):
+        thread = threading.Thread(target=self.populate_proc_list)
+        thread.daemon = True
+        thread.start()
+
+    def populate_proc_list(self):
+        self.processes.read()
+        if not self.first_init:
+            self.liststore.clear()
+            for proc in self.processes.list():
+                self.liststore.append([proc.pid, proc.cmdline])
+            self.first_init = True
+        else:
+            iter = 0
+            for proc in self.processes.list():
+                self.liststore[iter] = [proc.pid, proc.cmdline]
+                iter += 1
+
+        gobject.timeout_add(2000, self.populate_proc_list)
+
+
+class GnomePSWindow(Gtk.Window):
+    def __init__(self):
+        Gtk.Window.__init__(self, title="Gnome process explorer")
+        self.set_border_width(10)
+        self.set_default_size(200, 200)
+        self.set_position(Gtk.WindowPosition.CENTER)
+
+        self.grid = Gtk.Grid()
+        self.grid.set_column_homogeneous(True)
+        self.grid.set_row_homogeneous(True)
+
+        self.process_view = ProcessView()
+        self.scrollable = Gtk.ScrolledWindow()
+        self.scrollable.set_vexpand(True)
+
+        self.grid.attach(self.scrollable, 0, 0, 8, 10)
+
+        self.scrollable.add(self.process_view.treeview)
 
         self.new_button = Gtk.Button("New Process")
         self.kill_button = Gtk.Button("Kill Process")
@@ -88,39 +120,7 @@ class GnomePSWindow(Gtk.Window):
         self.connect('delete-event', Gtk.main_quit)
 
         gobject.threads_init()
-        GLib.threads_init()
-        Gdk.threads_init()
-        Gdk.threads_enter()
-        self.init_proc_list()
         Gtk.main()
-        Gdk.threads_leave()
-
-    def init_proc_list(self):
-        print "OLOLOL"
-        thread = threading.Thread(target=self.populate_proc_list)
-        thread.daemon = True
-        thread.start()
-
-    def populate_proc_list(self):
-        print "TROLL"
-        self.processes.read()
-        if not self.first_init:
-            self.liststore.clear()
-            for proc in self.processes.list():
-                self.liststore.append([proc.pid, proc.cmdline])
-            self.first_init = True
-        else:
-            iter = 0
-            for proc in self.processes.list():
-                self.liststore[iter] = [proc.pid, proc.cmdline]
-                iter += 1
-
-        gobject.timeout_add(2000, self.populate_proc_list)
-
-    def on_selection(self, selection):
-        model, treeiter = selection.get_selected()
-        if treeiter is not None:
-            self.selected_pid = model[treeiter][0]
 
     def on_new_button_clicked(self, button):
         dialog = NewProcessDialog(self)
@@ -135,13 +135,13 @@ class GnomePSWindow(Gtk.Window):
         dialog.destroy()
 
     def on_kill_button_clicked(self, button):
-        if self.selected_pid:
+        if self.process_view.selected_pid:
             try:
-                os.kill(int(self.selected_pid), signal.SIGKILL)
-                self.selected_pid = None
+                os.kill(int(self.process_view.selected_pid), signal.SIGKILL)
+                self.process_view.selected_pid = None
             except OSError:
                 self.show_error("Error", "Could not kill process {0}".format(
-                    self.selected_pid))
+                    self.process_view.selected_pid))
 
     def show_error(self, header="Error", text=""):
         dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR,

@@ -1,7 +1,6 @@
 import os
 
 
-
 class Process:
     def __init__(self, pid, cmdline, status):
         self.pid = pid
@@ -25,7 +24,7 @@ class ProcessList:
                 continue
 
             if cmdline:
-                self.processes[pid] = Process(pid, cmdline, status)
+                self.processes[pid] = Process(int(pid), cmdline, status)
 
     def list(self):
         for pid in self.processes:
