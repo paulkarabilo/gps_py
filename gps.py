@@ -7,6 +7,7 @@ import time
 import threading
 
 from processes import ProcessList
+from menu import PSMenu
 
 
 class NewProcessDialog(Gtk.Dialog):
@@ -79,7 +80,7 @@ class ProcessView():
                 self.liststore.append([proc.pid, proc.cmdline])
             i += 1
         t2 = time.time()
-        print "populate proc list takes {}", t2 - t1
+        print "populate proc list takes {}".format(t2 - t1)
         gobject.timeout_add(2000, self.populate_proc_list)
 
 
@@ -98,7 +99,12 @@ class GnomePSWindow(Gtk.Window):
         self.scrollable = Gtk.ScrolledWindow()
         self.scrollable.set_vexpand(True)
 
-        self.grid.attach(self.scrollable, 0, 0, 8, 10)
+        menu = PSMenu()
+        self.menubar = menu.menubar
+
+        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+
+        self.grid.attach(self.scrollable, 0, 1, 8, 10)
 
         self.scrollable.add(self.process_view.treeview)
 
@@ -112,7 +118,10 @@ class GnomePSWindow(Gtk.Window):
         self.grid.attach_next_to(self.kill_button, self.new_button,
                 Gtk.PositionType.RIGHT, 1, 1)
 
-        self.add(self.grid)
+        self.box.pack_start(self.menubar, False, False, 0)
+        self.box.pack_start(self.grid, True, True, 0)
+
+        self.add(self.box)
 
         self.show_all()
 

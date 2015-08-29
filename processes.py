@@ -8,8 +8,10 @@ class Process:
         self.status = status
         self.status_codes = {}
         for row in self.status.split('\n'):
-            (name, value) = row.split(':')
-            self.status_codes[name.strip()] = value.strip()
+            cols = row.split(':')
+            if len(cols) == 2:
+                [name, value] = cols
+                self.status_codes[name.strip()] = value.strip()
 
 
 class ProcessList:
@@ -42,4 +44,4 @@ class ProcessList:
 if __name__ == "__main__":
     pl = ProcessList()
     pl.read()
-    pl.processes[0].
+    pl.processes[0]
