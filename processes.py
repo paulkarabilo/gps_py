@@ -37,6 +37,14 @@ class ProcessList:
         for pid in self.processes:
             yield self.processes[pid]
 
+    def get_proc_stats(self):
+        keys = []
+        for pid in self.processes:
+            for key in self.processes[pid].status_codes:
+                if not key in keys:
+                    keys.append(key)
+        return keys
+
     def get(self, pid):
         return self.processes[pid]
 
@@ -44,4 +52,5 @@ class ProcessList:
 if __name__ == "__main__":
     pl = ProcessList()
     pl.read()
-    pl.processes[0]
+    print len(pl.processes)
+    print pl.get_proc_stats()

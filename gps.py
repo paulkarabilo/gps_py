@@ -25,26 +25,14 @@ class NewProcessDialog(Gtk.Dialog):
         return self.entry.get_text()
 
 
-class PSThread(threading.Thread):
-    def __init__(self, callback):
-        self.callback = callback
-        self.stopped = False
-        threading.Thread.__init__(self)
-
-    def run(self):
-        while not self.stopped:
-            self.callback()
-            time.sleep(1)
-
-
 class ProcessView():
-    columns = [("PID", str), ("Path", str)]
-
     def __init__(self):
-        self.first_init = False
         self.processes = ProcessList()
         self.liststore = Gtk.ListStore(int, str)
         self.treeview = Gtk.TreeView(model=self.liststore)
+
+        self.processes.read()
+        self.codes = self.processes.get_proc_stats()
 
         pid_text = Gtk.CellRendererText()
         pid_col = Gtk.TreeViewColumn("PID", pid_text, text=0)
