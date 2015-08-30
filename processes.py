@@ -13,8 +13,12 @@ class Process:
                 [name, value] = cols
                 self.status_codes[name.strip()] = value.strip()
 
+    def get_status(self, code):
+        return self.status_codes[code] or ""
+
 
 class ProcessList:
+    names = ['Name', 'Pid', 'Uid', 'Gid']
     def __init__(self):
         self.processes = {}
 
@@ -38,6 +42,9 @@ class ProcessList:
             yield self.processes[pid]
 
     def get_proc_stats(self):
+        return self.names
+        if len(self.processes) is 0:
+            self.read()
         keys = []
         for pid in self.processes:
             for key in self.processes[pid].status_codes:
@@ -51,6 +58,5 @@ class ProcessList:
 
 if __name__ == "__main__":
     pl = ProcessList()
-    pl.read()
     print len(pl.processes)
     print pl.get_proc_stats()
