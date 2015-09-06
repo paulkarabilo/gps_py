@@ -8,22 +8,7 @@ import threading
 
 from processes import ProcessList
 from menu import PSMenu
-
-
-class NewProcessDialog(Gtk.Dialog):
-    def __init__(self, parent):
-        Gtk.Dialog.__init__(self, "Start new process", parent, 0,
-                            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                             Gtk.STOCK_OK, Gtk.ResponseType.OK))
-
-        self.set_default_size(150, 100)
-        self.entry = Gtk.Entry()
-        self.get_content_area().add(self.entry)
-        self.show_all()
-
-    def get_procname(self):
-        return self.entry.get_text()
-
+from dialogs import NewProcessDialog
 
 class ProcessView():
     def __init__(self):
@@ -89,7 +74,7 @@ class GnomePSWindow(Gtk.Window):
         self.scrollable = Gtk.ScrolledWindow()
         self.scrollable.set_vexpand(True)
 
-        menu = PSMenu()
+        menu = PSMenu(self)
         self.menubar = menu.menubar
 
         self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
