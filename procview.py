@@ -1,7 +1,6 @@
 from processes import ProcessList
 from gi.repository import Gtk
 import gobject
-import threading
 import time
 
 
@@ -21,22 +20,18 @@ class ProcessView:
         for i in self.codes:
             text = Gtk.CellRendererText()
             col = Gtk.TreeViewColumn(i, text, text=j)
+            col.set_resizable(True)
             col.set_max_width(200)
             self.treeview.append_column(col)
             j += 1
 
         self.treeview.get_selection().connect("changed", self.on_selection)
-        self.init_proc_list()
+        self.populate_proc_list()
 
     def on_selection(self, selection):
         model, treeiter = selection.get_selected()
         if treeiter is not None:
             self.selected_pid = model[treeiter][0]
-
-    def init_proc_list(self):
-        thread = threading.Thread(target=self.populate_proc_list)
-        thread.daemon = True
-        thread.start()
 
     def populate_proc_list(self):
         t1 = time.time()
