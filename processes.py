@@ -1,6 +1,18 @@
 import os
 
 
+class UserGroups:
+    def __init__(self):
+        self.users = {}
+        self.groups = {}
+
+    def get_username(self, uid):
+        return self.users[uid]
+
+    def get_groupname(self, gid):
+        return self.groups[gid]
+
+
 class Process:
     def __init__(self, pid, cmdline, status):
         self.pid = pid
@@ -19,6 +31,7 @@ class Process:
 
 class ProcessList:
     names = ['Name', 'Pid', 'Uid', 'Gid']
+
     def __init__(self):
         self.processes = {}
 
