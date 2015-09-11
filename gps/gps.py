@@ -81,4 +81,3 @@ class GnomePSWindow(Gtk.Window):
         dialog.run()
         dialog.destroy()
 
-win = GnomePSWindow()
