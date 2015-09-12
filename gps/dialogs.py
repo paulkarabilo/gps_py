@@ -14,3 +14,13 @@ class NewProcessDialog(Gtk.Dialog):
 
     def get_procname(self):
         return self.entry.get_text()
+
+
+class AboutDialog(Gtk.AboutDialog):
+    def __init__(self):
+        Gtk.AboutDialog.__init__(self, "GTK PS")
+        self.set_program_name("GTK Process Manager")
+        self.set_version("0.0.1")
+        self.set_copyright("P.K.")
+        self.set_comments("Simple Process manager for ubuntu on gtk3, "
+                          "nothing fancy")

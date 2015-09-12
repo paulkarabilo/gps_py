@@ -38,7 +38,7 @@ class Process:
 
 
 class ProcessList:
-    names = ['Pid', 'Name', 'Users', 'Groups']
+    names = ['Pid', 'Name', 'Users', 'Groups', 'State']
 
     def __init__(self):
         self.processes = {}

@@ -1,5 +1,5 @@
 from gi.repository import Gtk
-from dialogs import NewProcessDialog
+from dialogs import NewProcessDialog, AboutDialog
 import os
 
 UI_INFO = """
@@ -8,6 +8,9 @@ UI_INFO = """
     <menu action='FileMenu'>
       <menuitem action='FileNew' />
       <menuitem action='FileQuit' />
+    </menu>
+    <menu action='HelpMenu'>
+      <menuitem action='AboutMenu' />
     </menu>
   </menubar>
 </ui>
@@ -18,6 +21,7 @@ class PSMenu:
     def __init__(self, parent):
         action_group = Gtk.ActionGroup("my_actions")
         self.add_file_menu_actions(action_group)
+        self.add_about_menu_action(action_group)
         self.parent = parent
         uimanager = self.create_ui_manager()
         uimanager.insert_action_group(action_group)
@@ -34,10 +38,22 @@ class PSMenu:
         action_filenew.connect("activate", self.on_new_click)
         action_group.add_action(action_filenew)
 
+    def add_about_menu_action(self, action_group):
+        action_helpmenu = Gtk.Action("HelpMenu", "Help", None, None)
+        action_group.add_action(action_helpmenu)
+        action_aboutmenu = Gtk.Action("AboutMenu", "About", None, None)
+        action_aboutmenu.connect("activate", self.about_dialog)
+        action_group.add_action(action_aboutmenu)
+
     def create_ui_manager(self):
         uimanager = Gtk.UIManager()
         uimanager.add_ui_from_string(UI_INFO)
         return uimanager
+
+    def about_dialog(self, param):
+        about = AboutDialog()
+        about.run()
+        about.destroy()
 
     def on_new_click(self, param):
         dialog = NewProcessDialog(self.parent)
