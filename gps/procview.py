@@ -7,7 +7,7 @@ import time
 class ProcessView:
     def __init__(self):
         self.processes = ProcessList()
-
+        self.timeout_id = None
         self.codes = self.processes.get_proc_stats()
         types = []
         for i in self.codes:
@@ -32,7 +32,12 @@ class ProcessView:
 
     def on_col_click(self, col):
         title = col.get_title()
-        [col, order] = self.processes.sort_by(title)
+        [what, order] = self.processes.sort_by(title)
+        cols = self.treeview.get_columns()
+        for c in cols:
+            c.set_sort_indicator(False)
+        col.set_sort_indicator(True)
+        col.set_sort_order(order)
         self.populate_proc_list()
 
     def on_selection(self, selection):
@@ -42,6 +47,8 @@ class ProcessView:
 
     def populate_proc_list(self):
         t1 = time.time()
+        if self.timeout_id:
+            gobject.source_remove(self.timeout_id)
         self.processes.read()
         i = 0
         for proc in self.processes.list():
@@ -54,4 +61,4 @@ class ProcessView:
             i += 1
         t2 = time.time()
         print "populate proc list takes {}".format(t2 - t1)
-        gobject.timeout_add(2000, self.populate_proc_list)
+        self.timeout_id = gobject.timeout_add(2000, self.populate_proc_list)
