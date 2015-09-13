@@ -20,12 +20,19 @@ class ProcessView:
         for i in self.codes:
             text = Gtk.CellRendererText()
             col = Gtk.TreeViewColumn(i, text, text=j)
+            col.connect("clicked", self.on_col_click)
             col.set_resizable(True)
+            col.set_clickable(True)
             col.set_max_width(200)
             self.treeview.append_column(col)
             j += 1
 
         self.treeview.get_selection().connect("changed", self.on_selection)
+        self.populate_proc_list()
+
+    def on_col_click(self, col):
+        title = col.get_title()
+        [col, order] = self.processes.sort_by(title)
         self.populate_proc_list()
 
     def on_selection(self, selection):

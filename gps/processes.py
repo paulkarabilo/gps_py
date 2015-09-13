@@ -41,11 +41,13 @@ class ProcessList:
     names = ['Pid', 'Name', 'Users', 'Groups', 'State']
 
     def __init__(self):
-        self.processes = {}
+        self.processes = []
+        self.sort_column = 'Pid'
+        self.sort_reverse = False
         self.usersgroups = UsersGroups()
 
     def read(self):
-        self.processes = {}
+        self.processes = []
         pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
         for pid in pids:
             try:
@@ -57,12 +59,20 @@ class ProcessList:
                 continue
 
             if cmdline:
-                self.processes[pid] = Process(int(pid), cmdline, status, self.usersgroups)
+                self.processes.append(Process(int(pid), cmdline, status, self.usersgroups))
+        self.sort()
+
+    def sort(self):
+        print self.sort_column, self.sort_reverse
+        if self.sort_column == 'Pid':
+            self.processes.sort(key=lambda proc: proc.pid,
+                                reverse=self.sort_reverse)
+        else:
+            self.processes.sort(key=lambda proc: proc.get_status(self.sort_column).lower(),
+                                reverse=self.sort_reverse)
 
     def list(self):
-        print(len(self.processes))
-        for pid in self.processes:
-            yield self.processes[pid]
+        return self.processes
 
     def get_proc_stats(self):
         return self.names
@@ -70,8 +80,11 @@ class ProcessList:
     def get(self, pid):
         return self.processes[pid]
 
-
-if __name__ == "__main__":
-    pl = ProcessList()
-    print len(pl.processes)
-    print pl.get_proc_stats()
+    def sort_by(self, column):
+        if not column in self.names:
+            return
+        if self.sort_column == column:
+            self.sort_reverse = not self.sort_reverse
+        else:
+            self.sort_column = column
+        return self.sort_column, self.sort_reverse
