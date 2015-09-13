@@ -45,6 +45,7 @@ class ProcessList:
         self.usersgroups = UsersGroups()
 
     def read(self):
+        self.processes = {}
         pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
         for pid in pids:
             try:

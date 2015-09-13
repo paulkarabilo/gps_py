@@ -59,6 +59,8 @@ class GnomePSWindow(Gtk.Window):
 
         if response == Gtk.ResponseType.OK:
             procname = dialog.get_procname()
+            if not procname.endswith(' &'):
+                procname += ' &'
             os.system(procname)
         elif response == Gtk.ResponseType.CANCEL:
             pass
