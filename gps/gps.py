@@ -1,4 +1,4 @@
-from gi.repository import Gtk, Gdk, GLib
+from gi.repository import Gtk
 
 import gobject
 import os
@@ -37,11 +37,15 @@ class GnomePSWindow(Gtk.Window):
         self.new_button.connect("clicked", self.on_new_button_clicked)
         self.kill_button.connect("clicked", self.on_kill_button_clicked)
 
-        self.grid.attach_next_to(self.new_button, self.scrollable,
-                Gtk.PositionType.BOTTOM, 1, 1)
-        self.grid.attach_next_to(self.kill_button, self.new_button,
-                Gtk.PositionType.RIGHT, 1, 1)
+        self.kill_button.set_border_width(5)
+        self.new_button.set_border_width(5)
 
+        self.grid.attach_next_to(self.new_button, self.scrollable,
+                                 Gtk.PositionType.BOTTOM, 1, 1)
+        self.grid.attach_next_to(self.kill_button, self.new_button,
+                                 Gtk.PositionType.RIGHT, 1, 1)
+
+        self.grid.set_border_width(5)
         self.box.pack_start(self.menubar, False, False, 0)
         self.box.pack_start(self.grid, True, True, 0)
 
@@ -78,8 +82,7 @@ class GnomePSWindow(Gtk.Window):
 
     def show_error(self, header="Error", text=""):
         dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR,
-                                 Gtk.ButtonsType.OK, header)
+                                   Gtk.ButtonsType.OK, header)
         dialog.format_secondary_text(text)
         dialog.run()
         dialog.destroy()
-
