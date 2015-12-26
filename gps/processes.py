@@ -2,8 +2,8 @@ import os
 import re
 from usersgroups import UsersGroups
 
-_scale = {'kB': 1024.0, 'mB': 1024.0*1024.0,
-          'KB': 1024.0, 'MB': 1024.0*1024.0}
+_scale = {'kB': 1024, 'mB': 1024*1024,
+          'KB': 1024, 'MB': 1024*1024}
 
 
 class Process:
@@ -30,7 +30,7 @@ class Process:
 
     def parse_mem(self, source, target):
         mem = self.status_codes[source].split(None, 3)
-        self.status_codes[target] = float(mem[0]) * _scale[mem[1]] / 1024
+        self.status_codes[target] = int(mem[0]) * _scale[mem[1]] / 1024
 
     def parse_uid(self, usersgroups):
         uids = set(re.split(r'\t+', self.status_codes['Uid']))
@@ -52,7 +52,7 @@ class Process:
 
 class ProcessList:
     names = ['Pid', 'Name', 'Users', 'Groups', 'State', 'Memory, kB', 'Resident Memory, kB', 'Stack, kB']
-    types = [str, str, str, str, str, float, float, float]
+    types = [str, str, str, str, str, int, int, int]
 
     def __init__(self):
         self.processes = []
