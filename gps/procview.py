@@ -9,9 +9,7 @@ class ProcessView:
         self.processes = ProcessList()
         self.timeout_id = None
         self.codes = self.processes.get_proc_stats()
-        types = []
-        for i in self.codes:
-            types.append(str)
+        types = self.processes.get_proc_types()
 
         self.liststore = Gtk.ListStore.new(types)
         self.treeview = Gtk.TreeView(model=self.liststore)
