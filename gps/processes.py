@@ -1,4 +1,4 @@
-import os
+from os import path, listdir
 import re
 from usersgroups import UsersGroups
 
@@ -33,16 +33,14 @@ class Process:
         self.status_codes[target] = int(mem[0]) * _scale[mem[1]] / 1024
 
     def parse_uid(self, usersgroups):
-        uids = set(re.split(r'\t+', self.status_codes['Uid']))
         users = []
-        for u in uids:
+        for u in set(re.split(r'\t+', self.status_codes['Uid'])):
             users.append(usersgroups.get_username(u))
         self.status_codes['Users'] = '||'.join(users)
 
     def parse_gid(self, usersgroups):
-        gids = set(re.split(r'\t+', self.status_codes['Gid']))
         groups = []
-        for g in gids:
+        for g in set(re.split(r'\t+', self.status_codes['Gid'])):
             groups.append(usersgroups.get_groupname(g))
         self.status_codes['Groups'] = '||'.join(groups)
 
@@ -62,24 +60,20 @@ class ProcessList:
 
     def read(self):
         self.processes = []
-        pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
+        pids = [pid for pid in listdir('/proc') if pid.isdigit()]
         for pid in pids:
             try:
-                cmdline = open(os.path.join('/proc', pid, 'cmdline'),
-                        'rb').read()
-                status = open(os.path.join('/proc', pid, 'status'),
-                        'rb').read()
+                cmdline = open(path.join('/proc', pid, 'cmdline'), 'rb').read()
+                status = open(path.join('/proc', pid, 'status'), 'rb').read()
             except IOError:
                 continue
-
             if cmdline:
                 self.processes.append(Process(int(pid), cmdline, status, self.usersgroups))
         self.sort()
 
     def sort(self):
         if self.sort_column == 'Pid':
-            self.processes.sort(key=lambda proc: proc.pid,
-                                reverse=self.sort_reverse)
+            self.processes.sort(key=lambda proc: proc.pid, reverse=self.sort_reverse)
         else:
             index = self.names.index(self.sort_column)
             t = self.types[index]

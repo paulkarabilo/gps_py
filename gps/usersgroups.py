@@ -14,21 +14,12 @@ class UsersGroups:
 
     def get_username(self, uid):
         id = int(uid)
-        if id in self.users:
-            return self.users[int(id)]['name']
-        else:
-            return ''
+        return self.users[id]['name'] if id in self.users else ''
 
     def get_usergroupname(self, uid):
         id = int(uid)
-        if id in self.users:
-            return self.users[id]['group']
-        else:
-            return ''
+        return self.users[id]['group'] if id in self.users else ''
 
     def get_groupname(self, gid):
         id = int(gid)
-        if id in self.groups:
-            return self.groups[id]['name']
-        else:
-            return ''
+        return self.groups[id]['name'] if id in self.groups else ''
