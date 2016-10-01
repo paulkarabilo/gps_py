@@ -1,12 +1,16 @@
 from os import path, listdir
 import re
 from usersgroups import UsersGroups
+import multiprocessing
 
 _scale = {'kB': 1024, 'mB': 1024*1024,
           'KB': 1024, 'MB': 1024*1024}
 
 
 class Process:
+    def __repr__(self):
+        return "<Proc>"
+
     def __init__(self, pid, cmdline, status, usersgroups):
         self.pid = pid
         self.cmdline = cmdline
@@ -48,6 +52,16 @@ class Process:
         return self.status_codes[code] or ""
 
 
+def try_read_proc(params):
+    try:
+        cmdline = open(path.join('/proc', params["pid"], 'cmdline'), 'rb').read()
+        status = open(path.join('/proc', params["pid"], 'status'), 'rb').read()
+    except IOError:
+        return None
+    if cmdline:
+        return Process(int(params["pid"]), cmdline, status, params["usersgroups"])
+
+
 class ProcessList:
     names = ['Pid', 'Name', 'Users', 'Groups', 'State', 'Memory, kB', 'Resident Memory, kB', 'Stack, kB']
     types = [str, str, str, str, str, int, int, int]
@@ -59,16 +73,15 @@ class ProcessList:
         self.usersgroups = UsersGroups()
 
     def read(self):
-        self.processes = []
-        pids = [pid for pid in listdir('/proc') if pid.isdigit()]
-        for pid in pids:
-            try:
-                cmdline = open(path.join('/proc', pid, 'cmdline'), 'rb').read()
-                status = open(path.join('/proc', pid, 'status'), 'rb').read()
-            except IOError:
-                continue
-            if cmdline:
-                self.processes.append(Process(int(pid), cmdline, status, self.usersgroups))
+        self.processes = filter(
+            None,
+            multiprocessing.Pool(processes=8).map(
+                try_read_proc,
+                [{'pid': pid, 'usersgroups': self.usersgroups}
+                 for pid in listdir('/proc')
+                 if pid.isdigit()]
+            )
+        )
         self.sort()
 
     def sort(self):

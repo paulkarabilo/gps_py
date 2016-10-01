@@ -11,7 +11,9 @@ from procview import ProcessView
 
 class GnomePSWindow(Gtk.Window):
     def __init__(self, app):
-        Gtk.Window.__init__(self, title="Gnome process explorer", application=app)
+        Gtk.Window.__init__(self,
+                            title="Gnome process explorer",
+                            application=app)
 
         self.set_default_size(200, 200)
         self.set_position(Gtk.WindowPosition.CENTER)
@@ -56,7 +58,6 @@ class GnomePSWindow(Gtk.Window):
 
         gobject.threads_init()
         self.show_all()
-        Gtk.main()
 
     def on_new_button_clicked(self, button):
         dialog = NewProcessDialog(self)

@@ -33,8 +33,7 @@ class ProcessView:
         [what, order] = self.processes.sort_by(title)
         cols = self.treeview.get_columns()
         for c in cols:
-            c.set_sort_indicator(False)
-        col.set_sort_indicator(True)
+            c.set_sort_indicator(True if c is col else False)
         col.set_sort_order(order)
         self.populate_proc_list()
 
