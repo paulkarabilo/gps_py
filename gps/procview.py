@@ -1,6 +1,5 @@
 from processes import ProcessList
-from gi.repository import Gtk
-import gobject
+from gi.repository import Gtk, GObject
 import time
 
 
@@ -45,7 +44,7 @@ class ProcessView:
     def populate_proc_list(self):
         t1 = time.time()
         if self.timeout_id:
-            gobject.source_remove(self.timeout_id)
+            GObject.source_remove(self.timeout_id)
         self.processes.read()
         i = 0
         for proc in self.processes.list():
@@ -58,4 +57,4 @@ class ProcessView:
             i += 1
         t2 = time.time()
         print "populate proc list takes {}".format(t2 - t1)
-        self.timeout_id = gobject.timeout_add(2000, self.populate_proc_list)
+        self.timeout_id = GObject.timeout_add(2000, self.populate_proc_list)

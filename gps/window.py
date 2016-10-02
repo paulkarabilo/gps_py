@@ -1,6 +1,5 @@
 from gi.repository import Gtk
 
-import gobject
 import os
 import signal
 
@@ -56,7 +55,6 @@ class GnomePSWindow(Gtk.Window):
 
         self.connect('delete-event', Gtk.main_quit)
 
-        gobject.threads_init()
         self.show_all()
 
     def on_new_button_clicked(self, button):
