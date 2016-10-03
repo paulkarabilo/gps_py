@@ -42,7 +42,6 @@ class ProcessView:
             self.selected_pid = model[treeiter][0]
 
     def populate_proc_list(self):
-        t1 = time.time()
         if self.timeout_id:
             GObject.source_remove(self.timeout_id)
         self.processes.read()
@@ -55,6 +54,4 @@ class ProcessView:
             else:
                 self.liststore.append(values)
             i += 1
-        t2 = time.time()
-        print "populate proc list takes {}".format(t2 - t1)
         self.timeout_id = GObject.timeout_add(2000, self.populate_proc_list)
