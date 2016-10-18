@@ -1,0 +1,16 @@
+<ui>
+  <menubar name='MenuBar'>
+    <menu action='FileMenu'>
+      <menuitem action='FileNew' />
+      <menuitem action='FileQuit' />
+    </menu>
+    <menu action='ViewMenu'>
+      <menuitem action='ViewProcesses' />
+      <menuitem action='ViewCPUs' />
+      <menuitem action='ViewNetwork' />
+    </menu>
+    <menu action='HelpMenu'>
+      <menuitem action='AboutMenu' />
+    </menu>
+  </menubar>
+</ui>

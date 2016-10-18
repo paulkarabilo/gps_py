@@ -57,6 +57,12 @@ class GnomePSWindow(Gtk.Window):
 
         self.show_all()
 
+    def show_processes(self):
+        pass
+
+    def show_cpus(self):
+        pass
+
     def on_new_button_clicked(self, button):
         dialog = NewProcessDialog(self)
         response = dialog.run()
