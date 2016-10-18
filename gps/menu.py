@@ -68,10 +68,10 @@ class PSMenu:
         dialog.destroy()
 
     def on_view_processes_click(self, param):
-        pass
+        self.parent.show_processes()
 
     def on_view_cpus_cick(self, param):
-        pass
+        self.parent.show_cpus()
 
     def on_view_network_click(self, param):
-        pass
+        self.parent.show_network()

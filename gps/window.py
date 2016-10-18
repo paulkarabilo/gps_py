@@ -14,6 +14,10 @@ class GnomePSWindow(Gtk.Window):
                             title="Gnome process explorer",
                             application=app)
 
+        self.process_view = None
+        self.cpus_view = None
+        self.network_view = None
+
         self.set_default_size(200, 200)
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -21,7 +25,7 @@ class GnomePSWindow(Gtk.Window):
         self.grid.set_column_homogeneous(True)
         self.grid.set_row_homogeneous(True)
 
-        self.process_view = ProcessView()
+        self.process_view = ProcessView(self)
         self.scrollable = Gtk.ScrolledWindow()
         self.scrollable.set_vexpand(True)
 
@@ -58,10 +62,31 @@ class GnomePSWindow(Gtk.Window):
         self.show_all()
 
     def show_processes(self):
-        pass
+        self.hide_cpus()
+        self.hide_network()
 
     def show_cpus(self):
-        pass
+        self.hide_processes()
+        self.hide_network()
+
+    def show_network(self):
+        self.hide_processes()
+        self.hide_cpus()
+
+    def hide_processes(self):
+        if self.process_view is not None:
+            self.process_view.destroy()
+            self.process_view = None
+
+    def hide_cpus(self):
+        if self.cpus_view is not None:
+            self.cpus_view.destroy()
+            self.cpus_view = None
+
+    def hide_network(self):
+        if self.network_view is not None:
+            self.network_view.destroy()
+            self.network_view = None
 
     def on_new_button_clicked(self, button):
         dialog = NewProcessDialog(self)

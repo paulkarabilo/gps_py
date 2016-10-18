@@ -1,10 +1,10 @@
 from processes import ProcessList
 from gi.repository import Gtk, GObject
-import time
 
 
 class ProcessView:
-    def __init__(self):
+    def __init__(self, window):
+        self.window = window
         self.processes = ProcessList()
         self.timeout_id = None
         self.codes = self.processes.get_proc_stats()
