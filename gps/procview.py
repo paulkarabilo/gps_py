@@ -47,8 +47,8 @@ class ProcessView:
         self.processes.read()
         i = 0
         for proc in self.processes.list():
-            codes = proc.status_codes
-            values = [codes[c] or "" for c in self.codes]
+            attrs = proc.attrs
+            values = [attrs[c] or "" for c in self.codes]
             if i < len(self.liststore):
                 self.liststore[i] = values
             else:

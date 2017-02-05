@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GLib, Gio
+from gi.repository import Gtk, Gio
 from window import GnomePSWindow
 
 
