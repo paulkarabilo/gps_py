@@ -1,5 +1,10 @@
-from processes import ProcessList
+"""
+    ProcView
+"""
+
+
 from gi.repository import Gtk, GObject
+from .processes import ProcessList
 
 
 class ProcessView:
@@ -47,8 +52,7 @@ class ProcessView:
         self.processes.read()
         i = 0
         for proc in self.processes.list():
-            attrs = proc.attrs
-            values = [attrs[c] or "" for c in self.codes]
+            values = [proc.get_attr(c) for c in self.codes]
             if i < len(self.liststore):
                 self.liststore[i] = values
             else:

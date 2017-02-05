@@ -2,17 +2,8 @@
     Processes module
 """
 
-import re
-import multiprocessing
 import psutil
-from os import path, listdir
-
-from .usersgroups import UsersGroups
-
-
-
-_scale = {'kB': 1024, 'mB': 1024*1024,
-          'KB': 1024, 'MB': 1024*1024}
+from gps.usersgroups import UsersGroups
 
 
 class Process:
