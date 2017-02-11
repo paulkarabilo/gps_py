@@ -30,6 +30,7 @@ class ProcessView:
             j += 1
 
         self.treeview.get_selection().connect("changed", self.on_selection)
+        self.treeview.connect("button_press_event", self.on_process_right_click)
         self.populate_proc_list()
 
     def on_col_click(self, col):
@@ -46,13 +47,16 @@ class ProcessView:
         if treeiter is not None:
             self.selected_pid = model[treeiter][0]
 
+    def on_process_right_click(self, *args):
+        print("AHA")
+
     def populate_proc_list(self):
         if self.timeout_id:
             GObject.source_remove(self.timeout_id)
         self.processes.read()
         i = 0
         for proc in self.processes.list():
-            values = [proc.get_attr(c) for c in self.codes]
+            values = [proc[c] for c in self.codes]
             if i < len(self.liststore):
                 self.liststore[i] = values
             else:

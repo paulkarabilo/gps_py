@@ -6,17 +6,6 @@ import psutil
 from gps.usersgroups import UsersGroups
 
 
-class Process:
-    def __repr__(self):
-        return "<Proc>"
-
-    def __init__(self, attrs):
-        self.attrs = attrs
-
-    def get_attr(self, attr):
-        return self.attrs[attr] or ""
-
-
 class ProcessList:
     names = ['pid', 'name', 'status']
     types = [int, str, str]
@@ -30,20 +19,20 @@ class ProcessList:
     def read(self):
         self.processes = []
         for p in psutil.process_iter():
-            self.processes.append(Process(p.as_dict()))
+            self.processes.append(p.as_dict())
         self.sort()
 
     def sort(self):
         if self.sort_column == 'pid':
-            self.processes.sort(key=lambda proc: proc.get_attr("pid"), reverse=self.sort_reverse)
+            self.processes.sort(key=lambda proc: proc["pid"], reverse=self.sort_reverse)
         else:
             index = self.names.index(self.sort_column)
             t = self.types[index]
             if t is str:
-                self.processes.sort(key=lambda proc: proc.get_attr(self.sort_column).lower(),
+                self.processes.sort(key=lambda proc: proc[self.sort_column].lower(),
                                 reverse=self.sort_reverse)
             else:
-                self.processes.sort(key=lambda proc: proc.get_attr(self.sort_column),
+                self.processes.sort(key=lambda proc: proc[self.sort_column],
                                 reverse=self.sort_reverse)
 
     def list(self):
