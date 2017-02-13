@@ -16,27 +16,27 @@ class ProcessList:
         self.usersgroups = UsersGroups()
 
     def read(self):
-        self.processes = []
+        self.processes = {}
         for p in psutil.process_iter():
-            self.processes.append({
+            self.processes[p.pid] = {
                 'pid': p.pid,
                 'status': p.status(),
                 'name': p.name()
-            })
-        self.sort()
+            }
 
-    def sort(self):
+    def sort(self, processes):
         index = self.names.index(self.sort_column)
         t = self.types[index]
         if t is str:
-            self.processes.sort(key=lambda proc: proc[self.sort_column].lower(),
+            processes.sort(key=lambda proc: proc[self.sort_column].lower(),
                             reverse=self.sort_reverse)
         else:
-            self.processes.sort(key=lambda proc: proc[self.sort_column],
+            processes.sort(key=lambda proc: proc[self.sort_column],
                             reverse=self.sort_reverse)
+        return processes
 
     def list(self):
-        return self.processes
+        return self.sort([v for v in self.processes.values()])
 
     def get_proc_stats(self):
         return self.names

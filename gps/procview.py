@@ -66,10 +66,7 @@ class ProcessView:
             self.window.show_error("Error", "Could not kill process {0}".format(
                 self.selected_pid))
 
-
     def destroy(self):
-        if self.timeout_id:
-            GObject.source_remove(self.timeout_id)
         self.treeview.destroy()
 
     def update(self):
