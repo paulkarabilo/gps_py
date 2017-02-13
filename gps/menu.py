@@ -18,12 +18,15 @@ class PSMenu:
     def add_view_menu_actions(self, action_group):
         action_viewmenu = Gtk.Action("ViewMenu", "View", None, None)
         action_group.add_action(action_viewmenu)
+        
         action_viewprocesses = Gtk.Action("ViewProcesses", "Tasks", None, None)
         action_viewprocesses.connect("activate", self.on_view_processes_click)
         action_group.add_action(action_viewprocesses)
+
         action_viewcpus = Gtk.Action("ViewCPUs", "CPU/Memory usage", None, None)
         action_viewcpus.connect("activate", self.on_view_cpus_cick)
         action_group.add_action(action_viewcpus)
+        
         action_viewnetwork = Gtk.Action("ViewNetwork", "Network", None, None)
         action_viewnetwork.connect("activate", self.on_view_network_click)
         action_group.add_action(action_viewnetwork)

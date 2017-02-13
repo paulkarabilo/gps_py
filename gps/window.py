@@ -1,11 +1,13 @@
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 
 import os
+import time
 import signal
 
 from menu import PSMenu
 from dialogs import NewProcessDialog
 from procview import ProcessView
+
 
 
 class GnomePSWindow(Gtk.Window):
@@ -14,10 +16,8 @@ class GnomePSWindow(Gtk.Window):
                             title="Gnome process explorer",
                             application=app)
 
-        self.process_view = None
-        self.cpus_view = None
-        self.network_view = None
-
+        self.active_tab = None
+        self.timeout_id = None
         self.set_default_size(200, 200)
         self.set_position(Gtk.WindowPosition.CENTER)
 
@@ -25,7 +25,6 @@ class GnomePSWindow(Gtk.Window):
         self.grid.set_column_homogeneous(True)
         self.grid.set_row_homogeneous(True)
 
-        self.process_view = ProcessView(self)
         self.scrollable = Gtk.ScrolledWindow()
         self.scrollable.set_vexpand(True)
 
@@ -36,7 +35,7 @@ class GnomePSWindow(Gtk.Window):
 
         self.grid.attach(self.scrollable, 0, 1, 8, 10)
 
-        self.scrollable.add(self.process_view.treeview)
+        self.show_processes()
 
         self.new_button = Gtk.Button("New Process")
         self.kill_button = Gtk.Button("Kill Process")
@@ -60,33 +59,20 @@ class GnomePSWindow(Gtk.Window):
         self.connect('delete-event', Gtk.main_quit)
 
         self.show_all()
+        self.update_view()
 
     def show_processes(self):
-        self.hide_cpus()
-        self.hide_network()
-
-    def show_cpus(self):
-        self.hide_processes()
-        self.hide_network()
+        if type(self.active_tab) != ProcessView:
+            if self.active_tab != None:
+                self.active_tab.destroy()
+            self.active_tab = ProcessView(self)
+            self.scrollable.add(self.active_tab.treeview)
 
     def show_network(self):
-        self.hide_processes()
-        self.hide_cpus()
+        pass
 
-    def hide_processes(self):
-        if self.process_view is not None:
-            self.process_view.destroy()
-            self.process_view = None
-
-    def hide_cpus(self):
-        if self.cpus_view is not None:
-            self.cpus_view.destroy()
-            self.cpus_view = None
-
-    def hide_network(self):
-        if self.network_view is not None:
-            self.network_view.destroy()
-            self.network_view = None
+    def show_stats(self):
+        pass
 
     def on_new_button_clicked(self, button):
         dialog = NewProcessDialog(self)
@@ -117,3 +103,10 @@ class GnomePSWindow(Gtk.Window):
         dialog.format_secondary_text(text)
         dialog.run()
         dialog.destroy()
+
+
+    def update_view(self):
+        if self.timeout_id:
+            GObject.source_remove(self.timeout_id)
+        self.active_tab.update()
+        self.timeout_id = GObject.timeout_add(2000, self.update_view)
