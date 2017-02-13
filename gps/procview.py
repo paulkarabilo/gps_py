@@ -5,7 +5,7 @@
 
 from gi.repository import Gtk
 from .processes import ProcessList
-
+import os, signal
 
 class ProcessView:
     def __init__(self, window):
@@ -30,7 +30,7 @@ class ProcessView:
             j += 1
 
         self.treeview.get_selection().connect("changed", self.on_selection)
-        self.treeview.connect("button_press_event", self.on_process_right_click)
+        self.treeview.connect("button_release_event", self.on_process_right_click)
 
     def on_col_click(self, col):
         title = col.get_title()
@@ -39,7 +39,7 @@ class ProcessView:
         for c in cols:
             c.set_sort_indicator(True if c is col else False)
         col.set_sort_order(order)
-        self.populate_proc_list()
+        self.update()
 
     def on_selection(self, selection):
         model, i = selection.get_selected()
@@ -56,10 +56,16 @@ class ProcessView:
             item.connect("activate", self.kill_process)
             menu.append(item)
             menu.show_all()
-            menu.popup(None, None, None, None, 1, 0)
+            Gtk.Menu.popup(menu, None, None, None, None, 1, 0)
 
-    def kill_process(self):
-        pass
+    def kill_process(self, event):
+        try:
+            os.kill(int(self.selected_pid), signal.SIGKILL)
+            self.selected_pid = None
+        except OSError:
+            self.window.show_error("Error", "Could not kill process {0}".format(
+                self.selected_pid))
+
 
     def destroy(self):
         if self.timeout_id:
