@@ -26,17 +26,14 @@ class ProcessList:
         self.sort()
 
     def sort(self):
-        if self.sort_column == 'pid':
-            self.processes.sort(key=lambda proc: proc["pid"], reverse=self.sort_reverse)
+        index = self.names.index(self.sort_column)
+        t = self.types[index]
+        if t is str:
+            self.processes.sort(key=lambda proc: proc[self.sort_column].lower(),
+                            reverse=self.sort_reverse)
         else:
-            index = self.names.index(self.sort_column)
-            t = self.types[index]
-            if t is str:
-                self.processes.sort(key=lambda proc: proc[self.sort_column].lower(),
-                                reverse=self.sort_reverse)
-            else:
-                self.processes.sort(key=lambda proc: proc[self.sort_column],
-                                reverse=self.sort_reverse)
+            self.processes.sort(key=lambda proc: proc[self.sort_column],
+                            reverse=self.sort_reverse)
 
     def list(self):
         return self.processes
