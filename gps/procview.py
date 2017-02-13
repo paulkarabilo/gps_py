@@ -3,7 +3,7 @@
 """
 
 
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk
 from .processes import ProcessList
 
 
@@ -11,7 +11,7 @@ class ProcessView:
     def __init__(self, window):
         self.window = window
         self.processes = ProcessList()
-        self.timeout_id = None
+
         self.codes = self.processes.get_proc_stats()
         types = self.processes.get_proc_types()
 
@@ -31,7 +31,6 @@ class ProcessView:
 
         self.treeview.get_selection().connect("changed", self.on_selection)
         self.treeview.connect("button_press_event", self.on_process_right_click)
-        self.populate_proc_list()
 
     def on_col_click(self, col):
         title = col.get_title()
@@ -43,16 +42,31 @@ class ProcessView:
         self.populate_proc_list()
 
     def on_selection(self, selection):
-        model, treeiter = selection.get_selected()
-        if treeiter is not None:
-            self.selected_pid = model[treeiter][0]
+        model, i = selection.get_selected()
+        if i is not None:
+            self.selected_pid = model[i][0]
 
-    def on_process_right_click(self, *args):
-        print("AHA")
+    def on_process_right_click(self, treeview, event):
+        if event.button == 3:
+            path, column, x, y = treeview.get_path_at_pos(int(event.x), int(event.y))
+            treeview.grab_focus()
+            treeview.set_cursor(path, column, 0)
+            menu = Gtk.Menu()
+            item = Gtk.MenuItem("Stop Process")
+            item.connect("activate", self.kill_process)
+            menu.append(item)
+            menu.show_all()
+            menu.popup(None, None, None, None, 1, 0)
 
-    def populate_proc_list(self):
+    def kill_process(self):
+        pass
+
+    def destroy(self):
         if self.timeout_id:
             GObject.source_remove(self.timeout_id)
+        self.treeview.destroy()
+
+    def update(self):
         self.processes.read()
         i = 0
         for proc in self.processes.list():
@@ -62,4 +76,3 @@ class ProcessView:
             else:
                 self.liststore.append(values)
             i += 1
-        self.timeout_id = GObject.timeout_add(2000, self.populate_proc_list)

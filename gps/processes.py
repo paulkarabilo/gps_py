@@ -5,7 +5,6 @@
 import psutil
 from gps.usersgroups import UsersGroups
 
-
 class ProcessList:
     names = ['pid', 'name', 'status']
     types = [int, str, str]
@@ -19,7 +18,11 @@ class ProcessList:
     def read(self):
         self.processes = []
         for p in psutil.process_iter():
-            self.processes.append(p.as_dict())
+            self.processes.append({
+                'pid': p.pid,
+                'status': p.status(),
+                'name': p.name()
+            })
         self.sort()
 
     def sort(self):
