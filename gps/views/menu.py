@@ -15,38 +15,34 @@ class PSMenu:
 
         self.menubar = uimanager.get_widget("/MenuBar")
 
-    def add_view_menu_actions(self, action_group):
-        action_viewmenu = Gtk.Action("ViewMenu", "View", None, None)
-        action_group.add_action(action_viewmenu)
-        
-        action_viewprocesses = Gtk.Action("ViewProcesses", "Tasks", None, None)
-        action_viewprocesses.connect("activate", self.on_view_processes_click)
-        action_group.add_action(action_viewprocesses)
+    def _action(self, action_group, **kwargs):
+        action = Gtk.Action(kwargs.get('menu_group', None), kwargs.get('menu_item', None),
+            None, None, kwargs.get('menu_item_gtk_stock', None))
+        cb = kwargs.get('callback', None)
+        if cb is not None:
+            action.connect('activate', cb)
+        action_group.add_action(action)
+        return action
 
-        action_viewcpus = Gtk.Action("ViewCPUs", "CPU/Memory usage", None, None)
-        action_viewcpus.connect("activate", self.on_view_cpus_cick)
-        action_group.add_action(action_viewcpus)
-        
-        action_viewnetwork = Gtk.Action("ViewNetwork", "Network", None, None)
-        action_viewnetwork.connect("activate", self.on_view_network_click)
-        action_group.add_action(action_viewnetwork)
+    def add_view_menu_actions(self, action_group):
+        self._action(action_group, menu_group='ViewMenu', menu_item='View')
+        self._action(action_group, menu_group='ViewProcesses', menu_item='Tasks',
+            callback=self.on_view_processes_click)
+        self._action(action_group, menu_group='ViewCPUs', menu_item='CPU/Memory usage',
+            callback=self.on_view_cpus_cick)
+        self._action(action_group, menu_group='ViewNetwork', menu_item='Network',
+            callback=self.on_view_network_click)
 
     def add_file_menu_actions(self, action_group):
-        action_filemenu = Gtk.Action("FileMenu", "File", None, None)
-        action_group.add_action(action_filemenu)
-        action_filequit = Gtk.Action("FileQuit", None, None, Gtk.STOCK_QUIT)
-        action_filequit.connect("activate", Gtk.main_quit)
-        action_group.add_action(action_filequit)
-        action_filenew = Gtk.Action("FileNew", None, None, Gtk.STOCK_NEW)
-        action_filenew.connect("activate", self.on_new_click)
-        action_group.add_action(action_filenew)
+        self._action(action_group, menu_group='FileMenu', menu_item='File')
+        self._action(action_group, menu_group='FileQuit', menu_item='Quit',
+            menu_item_gtk_stock=Gtk.STOCK_QUIT, callback=Gtk.main_quit)
+        self._action(action_group, menu_group='FileNew', menu_item='New',
+            menu_item_gtk_stock=Gtk.STOCK_NEW, callback=self.on_new_click)
 
     def add_about_menu_action(self, action_group):
-        action_helpmenu = Gtk.Action("HelpMenu", "Help", None, None)
-        action_group.add_action(action_helpmenu)
-        action_aboutmenu = Gtk.Action("AboutMenu", "About", None, None)
-        action_aboutmenu.connect("activate", self.about_dialog)
-        action_group.add_action(action_aboutmenu)
+        self._action(action_group, menu_group='HelpMenu', menu_item='Help')
+        self._action(action_group, menu_group='AboutMenu', menu_item='About', callback=self.about_dialog)
 
     def create_ui_manager(self):
         uimanager = Gtk.UIManager()
