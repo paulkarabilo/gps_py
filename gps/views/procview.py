@@ -4,7 +4,7 @@
 
 
 from gi.repository import Gtk
-from .processes import ProcessList
+from gps.models.processes import ProcessList
 import os, signal
 
 class ProcessView:

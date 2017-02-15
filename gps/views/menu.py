@@ -50,7 +50,7 @@ class PSMenu:
 
     def create_ui_manager(self):
         uimanager = Gtk.UIManager()
-        uimanager.add_ui_from_file("gps/menu.xml")
+        uimanager.add_ui_from_file("gps/views/menu.xml")
         return uimanager
 
     def about_dialog(self, param):

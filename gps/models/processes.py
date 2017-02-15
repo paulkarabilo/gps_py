@@ -3,7 +3,7 @@
 """
 
 import psutil
-from gps.usersgroups import UsersGroups
+from gps.models.usersgroups import UsersGroups
 
 class ProcessList:
     names = ['pid', 'name', 'status']
