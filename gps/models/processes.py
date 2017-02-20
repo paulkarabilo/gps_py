@@ -49,10 +49,10 @@ class ProcessList:
 
     def sort_by(self, column):
         if column not in self.names:
-            return
+            return None
         if self.sort_column == column:
             self.sort_reverse = not self.sort_reverse
         else:
             self.sort_column = column
-        return self.sort_column, self.sort_reverse
+        return self.sort_reverse
 
