@@ -8,6 +8,7 @@ from menu import PSMenu
 from dialogs import NewProcessDialog
 from procview import ProcessView
 
+
 class GnomePSWindow(Gtk.Window):
     def __init__(self, app):
         Gtk.Window.__init__(self,
@@ -34,6 +35,19 @@ class GnomePSWindow(Gtk.Window):
         self.grid.attach(self.scrollable, 0, 1, 8, 10)
 
         self.show_processes()
+
+        self.new_button = Gtk.Button("New Process")
+        self.kill_button = Gtk.Button("Kill Process")
+        self.new_button.connect("clicked", self.on_new_button_clicked)
+        self.kill_button.connect("clicked", self.on_kill_button_clicked)
+
+        self.kill_button.set_border_width(5)
+        self.new_button.set_border_width(5)
+
+        self.grid.attach_next_to(self.new_button, self.scrollable,
+                                 Gtk.PositionType.BOTTOM, 1, 1)
+        self.grid.attach_next_to(self.kill_button, self.new_button,
+                                 Gtk.PositionType.RIGHT, 1, 1)
 
         self.grid.set_border_width(5)
         self.box.pack_start(self.menubar, False, False, 0)
