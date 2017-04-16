@@ -2,10 +2,8 @@
     ProcView
 """
 
-
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, Gdk, GObject
 from .processes import ProcessList
-
 
 class ProcessView:
     def __init__(self, window):
@@ -47,8 +45,11 @@ class ProcessView:
         if treeiter is not None:
             self.selected_pid = model[treeiter][0]
 
-    def on_process_right_click(self, *args):
-        print("AHA")
+    def on_process_right_click(self, widget, event):
+        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 3:
+            model = widget.get_selection()
+            if model is not None:
+                print(model)
 
     def populate_proc_list(self):
         if self.timeout_id:
