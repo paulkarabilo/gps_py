@@ -89,13 +89,13 @@ class GnomePSWindow(Gtk.Window):
         dialog.destroy()
 
     def on_kill_button_clicked(self, button):
-        if self.process_view.selected_pid:
+        if type(self.active_tab) == ProcessView and self.active_tab.selected_pid:
             try:
-                os.kill(int(self.process_view.selected_pid), signal.SIGKILL)
-                self.process_view.selected_pid = None
+                os.kill(int(self.active_tab.selected_pid), signal.SIGKILL)
+                self.active_tab.selected_pid = None
             except OSError:
                 self.show_error("Error", "Could not kill process {0}".format(
-                    self.process_view.selected_pid))
+                    self.active_tab.selected_pid))
 
     def show_error(self, header="Error", text=""):
         dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR,

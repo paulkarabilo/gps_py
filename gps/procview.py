@@ -15,7 +15,7 @@ class ProcessView:
 
         self.liststore = Gtk.ListStore.new(types)
         self.treeview = Gtk.TreeView(model=self.liststore)
-
+        self.popup_menu = self.create_popup_menu()
         j = 0
         for i in self.codes:
             text = Gtk.CellRendererText()
@@ -28,8 +28,16 @@ class ProcessView:
             j += 1
 
         self.treeview.get_selection().connect("changed", self.on_selection)
-        self.treeview.connect("button_press_event", self.on_process_right_click)
+        self.treeview.connect("button-release-event", self.on_process_right_click)
 
+    def create_popup_menu(self):
+        menu = Gtk.Menu()
+        item = Gtk.MenuItem("Stop Process")
+        item.connect("activate", self.kill_process)
+        menu.append(item)
+        return menu
+        
+    
     def on_col_click(self, col):
         title = col.get_title()
         [what, order] = self.processes.sort_by(title)
@@ -37,7 +45,7 @@ class ProcessView:
         for c in cols:
             c.set_sort_indicator(True if c is col else False)
         col.set_sort_order(order)
-        self.populate_proc_list()
+        self.update()
 
     def on_selection(self, selection):
         model, i = selection.get_selected()
@@ -49,19 +57,13 @@ class ProcessView:
             path, column, x, y = treeview.get_path_at_pos(int(event.x), int(event.y))
             treeview.grab_focus()
             treeview.set_cursor(path, column, 0)
-            menu = Gtk.Menu()
-            item = Gtk.MenuItem("Stop Process")
-            item.connect("activate", self.kill_process)
-            menu.append(item)
-            menu.show_all()
-            menu.popup(None, None, None, None, 1, 0)
+            self.popup_menu.popup(None, None, None, None, 1, 0)
+            self.popup_menu.show_all()
 
-    def kill_process(self):
-        pass
+    def kill_process(self, *args):
+        print(args)
 
     def destroy(self):
-        if self.timeout_id:
-            GObject.source_remove(self.timeout_id)
         self.treeview.destroy()
 
     def update(self):
