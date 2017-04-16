@@ -1,5 +1,5 @@
 from gi.repository import Gtk, Gio
-from window import GnomePSWindow
+from views.window import GnomePSWindow
 
 
 class Application(Gtk.Application):

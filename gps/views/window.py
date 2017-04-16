@@ -9,7 +9,6 @@ from dialogs import NewProcessDialog
 from procview import ProcessView
 
 
-
 class GnomePSWindow(Gtk.Window):
     def __init__(self, app):
         Gtk.Window.__init__(self,
@@ -62,7 +61,7 @@ class GnomePSWindow(Gtk.Window):
         self.update_view()
 
     def show_processes(self):
-        if type(self.active_tab) != ProcessView:
+        if not isinstance(self.active_tab, ProcessView):
             if self.active_tab != None:
                 self.active_tab.destroy()
             self.active_tab = ProcessView(self)
@@ -89,13 +88,8 @@ class GnomePSWindow(Gtk.Window):
         dialog.destroy()
 
     def on_kill_button_clicked(self, button):
-        if type(self.active_tab) == ProcessView and self.active_tab.selected_pid:
-            try:
-                os.kill(int(self.active_tab.selected_pid), signal.SIGKILL)
-                self.active_tab.selected_pid = None
-            except OSError:
-                self.show_error("Error", "Could not kill process {0}".format(
-                    self.active_tab.selected_pid))
+        if isinstance(self.active_tab, ProcessView):
+            self.active_tab.kill_process(0)
 
     def show_error(self, header="Error", text=""):
         dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.ERROR,

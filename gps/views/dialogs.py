@@ -9,8 +9,12 @@ class NewProcessDialog(Gtk.Dialog):
 
         self.set_default_size(150, 100)
         self.entry = Gtk.Entry()
+        self.entry.connect('activate', self.on_enter)
         self.get_content_area().add(self.entry)
         self.show_all()
+
+    def on_enter(self, event):
+        self.response(Gtk.ResponseType.OK)
 
     def get_procname(self):
         return self.entry.get_text()
