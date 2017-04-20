@@ -70,8 +70,12 @@ class GnomePSWindow(Gtk.Window):
     def show_network(self):
         pass
 
-    def show_stats(self):
-        pass
+    def show_system(self):
+        if not isinstance(self.active_tab, SystemView):
+            if self.active_tab != None:
+                self.active_tab.destroy()
+            self.active_tab = SystemView(self)
+            self.scrollable.add(self.active_tab.treeview)
 
     def on_new_button_clicked(self, button):
         dialog = NewProcessDialog(self)

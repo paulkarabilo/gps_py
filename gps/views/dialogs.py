@@ -26,5 +26,5 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_program_name("GTK Process Manager")
         self.set_version("0.0.1")
         self.set_copyright("P.K.")
-        self.set_comments("Simple Process manager for ubuntu on gtk3, "
+        self.set_comments("Simple Process manager for gtk3, "
                           "nothing fancy")

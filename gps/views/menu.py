@@ -29,7 +29,7 @@ class PSMenu:
         self._action(action_group, menu_group='ViewProcesses', menu_item='Tasks',
             callback=self.on_view_processes_click)
         self._action(action_group, menu_group='ViewCPUs', menu_item='CPU/Memory usage',
-            callback=self.on_view_stats_cick)
+            callback=self.on_view_system_cick)
         self._action(action_group, menu_group='ViewNetwork', menu_item='Network',
             callback=self.on_view_network_click)
 
@@ -69,8 +69,8 @@ class PSMenu:
     def on_view_processes_click(self, param):
         self.parent.show_processes()
 
-    def on_view_stats_cick(self, param):
-        self.parent.show_stats()
+    def on_view_system_cick(self, param):
+        self.parent.show_system()
 
     def on_view_network_click(self, param):
         self.parent.show_network()
