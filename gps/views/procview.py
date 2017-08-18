@@ -91,3 +91,6 @@ class ProcessView:
             else:
                 self.liststore.append(values)
             i += 1
+
+    def get_view(self):
+        return self.treeview
